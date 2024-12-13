@@ -39,6 +39,7 @@ Route::get('/organizations', [OrganizationController::class, 'getAllOrganization
 
 // thêm chi nhánh
 Route::post('/branches', [BranchController::class, 'addBranch']);
+Route::post('/branches/count', [BranchController::class, 'countBranchesByOrganization']);
 
 // cập nhập chi nhánh
 Route::put('/branches/{id}', [BranchController::class, 'updateBranch']);

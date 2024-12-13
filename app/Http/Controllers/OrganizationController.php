@@ -66,7 +66,7 @@ class OrganizationController extends Controller
         }
     
         return response()->json([
-            'status' => $status,
+            'status' => true,
             'message' => 'Organization, admin user, and login created successfully!',
             'organization' => $organization,
             'adminUser' => $adminUser,

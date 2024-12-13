@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\Organization;
+use App\Models\User;
+use App\Models\MedicalRecordBook;
 
 class BranchController extends Controller
 {
@@ -53,7 +55,50 @@ class BranchController extends Controller
         }
     }
     
-
+    public function countBranchesByOrganization(Request $request)
+    {
+        try {
+            // Xác thực đầu vào
+            $request->validate([
+                'tokeorg' => 'required',
+            ]);
+    
+            // Tìm tổ chức theo token
+            $organization = Organization::where('tokenorg', $request->tokeorg)->first();
+    
+            if (!$organization) {
+                return response()->json([
+                    'message' => 'Organization not found. Please provide a valid tokeorg.'
+                ], 404);
+            }
+    
+            // Đếm số chi nhánh liên quan đến tổ chức
+            $branchCount = Branch::where('tokeorg', $request->tokeorg)->count();
+    
+            // Đếm số người dùng liên quan đến tổ chức
+            $userCount = User::where('tokenorg', $request->tokeorg)->count();
+    
+            // Đếm số hồ sơ y tế liên quan đến tổ chức
+            $medicalRecordCount = MedicalRecordBook::where('tokeorg', $request->tokeorg)->count();
+    
+            // Trả về dữ liệu đếm được
+            return response()->json([
+                'message' => 'Counts retrieved successfully.',
+                'tokeorg' => $request->tokeorg,
+                'branch_count' => $branchCount,
+                'user_count' => $userCount,
+                'medical_record_count' => $medicalRecordCount,
+            ], 200);
+    
+        } catch (\Exception $e) {
+            // Trả về thông báo lỗi nếu có lỗi xảy ra
+            return response()->json([
+                'message' => 'An error occurred while retrieving counts.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function updateBranch(Request $request, $id)
     {
         $branch = Branch::find($id);
